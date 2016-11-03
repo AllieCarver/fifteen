@@ -13,11 +13,21 @@ pygame.init()
 TILE_SIZE = 100
 BORDER_SIZE = 50
 
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 def load_image(name, colorkey=None, alpha=False):
     """
     image load function, exits if resources fail to load
     """
-    fullname = os.path.join('data', name)
+    fullname = resource_path(os.path.join('data', name))
     try:
         image = pygame.image.load(fullname)
     except pygame.error, message:
@@ -50,9 +60,9 @@ class FifteenGUI:
         self._screen = pygame.display.set_mode((self._width, self._height))
         self._screen_rect = self._screen.get_rect()
         pygame.display.set_caption('Fifteen')
-        self._background, dummy_rect = load_image('bg.png', alpha=True)
+        self._background, dummy_rect = load_image('bg3.png', alpha=True)
         self._loadscreen, dummy_rect = load_image('loadscreen.png', True)
-        self._tiles_sprite, dummy_rect = load_image('fifteen.png', alpha=True)
+        self._tiles_sprite, dummy_rect = load_image('fifteen2.png', alpha=True)
         self._tiles = []
         self.make_tiles()
         self._possible_moves = 'udlr'
@@ -184,6 +194,7 @@ class FifteenGUI:
             while self._solution:
                 self._puzzle.update_puzzle(self._solution[0])
                 self._solution = self._solution[1:]
+                self._screen.blit(self._background, self._screen_rect)
                 self.update()
                 pygame.display.flip()
                 pygame.time.wait(250)
